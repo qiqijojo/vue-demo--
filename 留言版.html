@@ -10,27 +10,33 @@
     <script>
         window.onload = function () {
             new Vue({
-                el:'#box',
-                data:{
-                    myData:[],
-                    username:'',
-                    age:'',
-                    nowIndex:-100
+                el: '#box',
+                data: {
+                    myData: [],
+                    username: '',
+                    age: '',
+                    nowIndex: -100,
+                    flag: false
                 },
-                methods:{
-                    add:function(){
-                        this.myData.push({
-                            name:this.username,
-                            age:this.age
-                        });
-                        this.username='';
-                        this.age='';
+                methods: {
+                    add: function () {
+                        if (this.username && this.age) {
+                            this.myData.push({
+                                name: this.username,
+                                age: this.age
+                            });
+                        } else {
+                            alert('信息不能为空')
+                        }
+                        this.username = '';
+                        this.age = '';
                     },
-                   deleteData:function () {
-                       this.myData.pop();
-                   },
-                    deleteAll:function () {
-                        this.myData = [];
+                    deleteData: function (n) {
+                        if (n === -2) {
+                            this.myData = [];
+                        } else {
+                            this.myData.splice(n, 1);
+                        }
                     }
                 }
             })
@@ -40,13 +46,13 @@
 <body>
 <div class="container" id="box">
     <form role="form">
-        <div  class="form-group">
+        <div class="form-group">
             <label for="username">用户名</label>
-            <input type="text" id="username"  class="form-control" v-model="username"/>
+            <input type="text" id="username" class="form-control" v-model="username"/>
         </div>
-        <div  class="form-group">
+        <div class="form-group">
             <label for="age">年龄</label>
-            <input type="text" id="age"  class="form-control" v-model="age"/>
+            <input type="text" id="age" class="form-control" v-model="age"/>
         </div>
         <div class="form-group">
             <input type="button" class="btn btn-primary btn-sm" value="添加" @click="add()"/>
@@ -70,12 +76,16 @@
             <td class="text-center">{{item.age}}</td>
             <td class="text-center">
                 <!--按照索引删除没实现-->
-                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#layer">删除</button>
+                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#layer"
+                        @click="nowIndex=index,flag=false">删除
+                </button>
             </td>
         </tr>
         <tr v-show="myData.length!=0">
             <td colspan="4" class="text-right">
-                <button type="button" class="btn btn-danger btn-sm" @click="deleteAll()">全部删除</button>
+                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#layer"
+                        @click="nowIndex=-2,flag=true">全部删除
+                </button>
             </td>
         </tr>
         <tr v-show="myData.length===0">
@@ -87,17 +97,17 @@
 
     <!--模态框 弹出框-->
     <!--将弹出框的大小没改-->
-    <div role="dialog" class="modal fade" id="layer" data-index="{{nowIndex}}">
+    <div role="dialog" class="modal fade" id="layer">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">
                     <span>&times;</span>
                 </button>
-                <h4 class="modal-title">确定要删除吗？</h4>
+                <h4 class="modal-title">确定要<span v-show="flag">全部</span>删除吗？</h4>
             </div>
             <div class="modal-body text-right">
                 <button data-dismiss="modal" class="btn btn-success btn-sm">取消</button>
-                <button data-dismiss="modal" class="btn btn-primary btn-sm" @click="deleteData()">确定</button>
+                <button data-dismiss="modal" class="btn btn-primary btn-sm" @click="deleteData(nowIndex)">确定</button>
             </div>
         </div>
     </div>
